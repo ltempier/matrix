@@ -1,10 +1,13 @@
-const express = require('express'),
+const async = require('async'),
+    express = require('express'),
     config = require('./config'),
     http = require('http'),
     session = require('express-session'),
     MongoStore = require('connect-mongo')(session);
 
-var app = express();
+var app = express(),
+    components = require('./components');
+
 app.use(session({
     name: 'session',
     secret: '53cr37m4l4qu415',
@@ -17,12 +20,12 @@ app.use(session({
     store: new MongoStore(config.mongo)
 }));
 
-app.use('/*', function (req, res) {
-    res.status(404).send('Not found');
-});
-
-var server = http.createServer(app);
-server.listen(config.port, config.ip, function () {
-    console.info('Express server listening on %d, in %s mode', config.port, config.env)
+components.init(app, function (err) {
+    if (err)
+        return console.error(err);
+    var server = http.createServer(app);
+    server.listen(config.port, config.ip, function () {
+        console.info('Express server listening on %d, in %s mode', config.port, config.env)
+    });
 });
 
