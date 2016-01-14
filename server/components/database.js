@@ -13,16 +13,12 @@ class Database {
                 return callback(err);
             this.db = db;
             this.pixels = db.collection('pixels');
-            callback()
+            this.removePixels(callback)
         });
     }
 
-    savePixel(callback) {
-
-    }
-
-    saveMatrix(callback) {
-
+    removePixels(callback) {
+        this.pixels.deleteMany({}, callback)
     }
 
     save() {

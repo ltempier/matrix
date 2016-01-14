@@ -3,13 +3,16 @@
 const async = require('async');
 
 var mqtt = require('./mqtt'),
-    database = require('./database'),
-    routes = require('./routes');
+    database = require('./database');
 
 module.exports.init = function (app, callback) {
     async.parallel([
         mqtt.init.bind(mqtt),
-        database.init.bind(database)
-    ], callback);
-    routes(app)
+        //database.init.bind(database)
+    ], function (err) {
+        if (err)
+            return callback(err);
+        require('./routes')(app);
+        callback()
+    })
 };

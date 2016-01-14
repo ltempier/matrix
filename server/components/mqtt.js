@@ -19,14 +19,6 @@ class Mqtt {
         });
     }
 
-    setPixel(callback) {
-        this.sendMessage("command/setPixel", "", callback)
-    }
-
-    setMatrix(callback) {
-        this.sendMessage("command/setMatrix", "", callback)
-    }
-
     sendMessage(topic, message, callback) {
         if (!callback || typeof callback !== 'function')
             callback = function (err) {
