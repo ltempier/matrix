@@ -1,7 +1,7 @@
 const path = require('path'),
     webpack = require('webpack'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
-    clientPath = path.join(__dirname, 'client');
+    clientPath = path.join(__dirname, 'src');
 
 module.exports = {
     cache: true,
@@ -9,18 +9,18 @@ module.exports = {
     context: clientPath,
     entry: [
         'webpack-hot-middleware/client?reload=true',
-        path.join(clientPath, 'src', 'index.js')
+        path.join(clientPath, 'index.js')
     ],
     resolve: {
         root: clientPath,
-        extensions: ['', '.jsx', '.js', '.json'],
+        extensions: ['', '.css', '.less', '.jsx', '.js', '.json'],
         modulesDirectories: [
             'node_modules',
             path.resolve(__dirname, './node_modules')
         ]
     },
     output: {
-        path: path.join(clientPath, "dist"),
+        path: path.join(__dirname, "dist"),
         filename: '[name].bundle.js',
         publicPath: '/'
     },
@@ -33,33 +33,23 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             inject: true,
-            template: path.join(clientPath, 'src', 'index.html')
+            template: path.join(clientPath, 'index.html')
         }),
         new webpack.NoErrorsPlugin()
     ],
     module: {
         loaders: [
+            {test: /bootstrap\/js\//, loader: 'imports?jQuery=jquery'},
             {
-                test: /\.js$/,
+                test: /\.jsx?$/,
                 loader: 'babel',
                 exclude: /node_modules/,
                 query: {
-                    cacheDirectory: true
+                    presets: ['react', 'es2015']
                 }
             },
-            {
-                test: /\.css$/,
-                loader: "style!css",
-                include: clientPath
-            },
-            //{
-            //    test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            //    loader: "url-loader?limit=10000&mimetype=application/font-woff"
-            //},
-            //{
-            //    test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-            //    loader: "file-loader"
-            //}
+            {test: /\.css$/, loader: "style-loader!css-loader"},
+            {test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000'}
         ]
     }
 };

@@ -6,16 +6,23 @@ const config = require('./../config/index'),
 class Mqtt {
     constructor() {
 
+        this.isConnect = false;
+
     }
 
     init(callback) {
         var client = mqtt.connect(config.mqtt);
         client.on('connect', ()  => {
+
             client.subscribe('/log', () => {
                 client.on('message', this.onMessage);
             });
             this.client = client;
-            callback()
+
+            if (!this.isConnect) {
+                this.isConnect = true;
+                callback()
+            }
         });
     }
 

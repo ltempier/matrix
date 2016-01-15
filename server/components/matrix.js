@@ -19,8 +19,8 @@ class Matrix {
             })
         });
 
-
-        this.setPixelColor(0, 0, new Color(200, 200, 200))
+        this.setPixelColor(0, 0, new Color(200, 200, 200));
+        this.setPixelColor(5, 1, new Color(123, 0, 123))
     }
 
     setPixelColor(x, y, color) {
@@ -40,6 +40,20 @@ class Matrix {
         else
             n += x;
         return [n].concat(color.toArray()).join(this.separator)
+    }
+
+    toJSON() {
+        var pixels = [];
+        this.pixels.forEach((line) => {
+            line.forEach((pixel)=> {
+                pixels.push(pixel.toJSON())
+            })
+        });
+        return {
+            width: this.width,
+            height: this.height,
+            pixels: pixels
+        }
     }
 
     getMqttMatrix() {
@@ -64,5 +78,5 @@ class Matrix {
 }
 
 
-var matrix = new Matrix(10, 5);
+var matrix = new Matrix(80, 20);
 module.exports = matrix;

@@ -11,6 +11,14 @@ class Pixel {
         this.color = new Color(color)
     }
 
+    toJSON() {
+        return {
+            x: this.x,
+            y: this.y,
+            color: this.color.toJSON()
+        }
+    }
+
     setColor(color) {
         this.color.set(color)
     }
@@ -63,7 +71,7 @@ class Color {
         })
     }
 
-    get() {
+    toJSON() {
         return _.pick(this, this.colorProperties)
     }
 

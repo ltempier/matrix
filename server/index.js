@@ -3,13 +3,13 @@ const path = require('path'),
     express = require('express'),
     config = require('./config'),
     session = require('express-session'),
-    MongoStore = require('connect-mongo')(session),
+    //MongoStore = require('connect-mongo')(session),
     webpack = require('webpack'),
     webpackMiddleware = require('webpack-dev-middleware'),
     webpackHotMiddleware = require('webpack-hot-middleware');
 
 const isDeveloping = process.env.NODE_ENV !== 'production';
-const clientPath = path.join(__dirname, '..', 'client');
+const clientPath = path.join(__dirname, '..');
 
 var app = express();
 
@@ -22,7 +22,7 @@ app.use(session({
     },
     resave: false,
     saveUninitialized: true,
-    store: new MongoStore(config.mongo)
+    //store: new MongoStore(config.mongo)
 }));
 
 require('./components').init(app, function (err) {

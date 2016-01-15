@@ -1,0 +1,28 @@
+.matrix-container {
+    width: 100%;
+}
+
+.pixel {
+    cursor: pointer;
+    border: 1px solid rgba(155, 155, 155, 0.1);
+
+    background-color: white;
+
+    -webkit-transition: all 0.5s ease; /* Safari and Chrome */
+    -moz-transition: all 0.5s ease; /* Firefox */
+    -ms-transition: all 0.5s ease; /* IE 9 */
+    -o-transition: all 0.5s ease; /* Opera */
+    transition: all 0.5s ease;
+}
+
+.pixel:hover {
+    /*-webkit-transform: scale(1.4);*/
+    /*-moz-transform: scale(1.4);*/
+    /*-ms-transform: scale(1.4);*/
+    /*-o-transform: scale(1.4);*/
+    /*transform: scale(1.4);*/
+    /*border: 1px solid black;*/
+    /*opacity: 0.6;*/
+    /*filter: alpha(opacity=60);*/
+}
+
