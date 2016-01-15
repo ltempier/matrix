@@ -48,7 +48,7 @@ class Matrix {
             if (Matrix.isOdd(indexLine))
                 line = line.reverse();
             line.forEach((pixel) => {
-                bufferArray.push(pixel.color.toArray().join(this.separator))
+                bufferArray.push(pixel.getColorArray().join(this.separator))
             })
         });
         return bufferArray.join(this.separator)
