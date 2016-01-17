@@ -8,10 +8,12 @@ var mqtt = require('./mqtt'),
 module.exports.init = function (app, callback) {
     async.parallel([
         mqtt.init.bind(mqtt),
-        //database.init.bind(database)
+        database.init.bind(database)
     ], function (err) {
         if (err)
             return callback(err);
+
+        require('./matrix').init(20, 8);
         require('./routes')(app);
         callback()
     })

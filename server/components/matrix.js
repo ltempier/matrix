@@ -4,68 +4,44 @@
 const _ = require('lodash'),
     async = require('async'),
     Pixel = require('./pixel').Pixel,
-    Color = require('./pixel').Color;
+    Color = require('./pixel').Color,
+    config = require('./../config/index'),
+    database = require('./database');
 
 var mqtt = require('./mqtt');
 
 class Matrix {
-    constructor(width, height) {
+    constructor() {
         this.separator = ",";
+    }
+
+    init(width, height) {
         this.width = width;
         this.height = height;
-        this.pixels = _.map(new Array(height), function (array, y) {
-            return _.map(new Array(width), function (array, x) {
-                return new Pixel(x, y);
-            })
+
+        database.set({
+            size: {
+                width: this.width,
+                height: this.height
+            }
         });
-
-        this.setPixelColor(0, 0, new Color(200, 200, 200));
-        this.setPixelColor(5, 1, new Color(123, 0, 123))
     }
 
-    setPixelColor(x, y, color) {
-        if (x >= this.width || y >= this.height)
-            return;
-
-        const mqttMessage = this.getMqttPixel(x, y, color);
-        mqtt.sendMessage("command/setPixel", mqttMessage, (err) => {
-            this.pixels[y][x].setColor(color);
-        })
+    to2D(n) {
+        var y = Math.floor(n / this.width),
+            x = n - (y * this.width);
+        if (Matrix.isOdd(y))
+            x = this.width - x - 1;
+        return [x, y]
     }
 
-    getMqttPixel(x, y, color) {
+    to1D(x, y) {
         var n = this.width * y;
         if (Matrix.isOdd(y))
             n += (this.width - x - 1);
         else
             n += x;
-        return [n].concat(color.toArray()).join(this.separator)
-    }
-
-    toJSON() {
-        var pixels = [];
-        this.pixels.forEach((line) => {
-            line.forEach((pixel)=> {
-                pixels.push(pixel.toJSON())
-            })
-        });
-        return {
-            width: this.width,
-            height: this.height,
-            pixels: pixels
-        }
-    }
-
-    getMqttMatrix() {
-        var bufferArray = [];
-        this.pixels.forEach((line, indexLine) => {
-            if (Matrix.isOdd(indexLine))
-                line = line.reverse();
-            line.forEach((pixel) => {
-                bufferArray.push(pixel.getColorArray().join(this.separator))
-            })
-        });
-        return bufferArray.join(this.separator)
+        return n
     }
 
     static isEven(n) {
@@ -78,5 +54,6 @@ class Matrix {
 }
 
 
-var matrix = new Matrix(80, 20);
+var matrix = new Matrix();
+
 module.exports = matrix;

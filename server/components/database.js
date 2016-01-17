@@ -1,28 +1,27 @@
 "use strict";
 
 const config = require('./../config/index'),
-    MongoClient = require('mongodb').MongoClient;
+    Firebase = require('firebase'),
+    FirebaseTokenGenerator = require('firebase-token-generator');
 
 class Database {
     constructor() {
+        this.ref = new Firebase(config.firebase.url);
+        this.tokenGenerator = new FirebaseTokenGenerator(config.firebase.secret);
     }
 
     init(callback) {
-        MongoClient.connect(config.mongo.url, (err, db) => {
-            if (err)
-                return callback(err);
-            this.db = db;
-            this.pixels = db.collection('pixels');
-            this.removePixels(callback)
+        this.token = this.tokenGenerator.createToken({
+            uid: config.firebase.uid
         });
+        this.ref.authWithCustomToken(this.token, callback)
     }
 
-    removePixels(callback) {
-        this.pixels.deleteMany({}, callback)
-    }
-
-    save() {
-
+    set(object) {
+        this.ref.set(object, function (err) {
+            if (err)
+                console.error(err)
+        })
     }
 }
 
