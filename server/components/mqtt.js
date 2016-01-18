@@ -1,8 +1,7 @@
 "use strict";
 
 const config = require('./../config/index'),
-    mqtt = require('mqtt'),
-    database = require('./database');
+    mqtt = require('mqtt');
 
 class Mqtt {
     constructor() {
@@ -23,7 +22,7 @@ class Mqtt {
             }
         });
 
-        this.client.on('message', (topic, message, packet) => {
+        this.client.on('message', (topic, message) => {
             switch (topic) {
                 case '/log':
                     this.onLog(message);
@@ -44,8 +43,10 @@ class Mqtt {
                 if (err)
                     console.error(err);
             };
+
         if (!this.client)
             return callback(new Error('No mqtt client'));
+
         this.client.publish(topic, message, callback);
     }
 
@@ -54,11 +55,12 @@ class Mqtt {
     }
 
     onSetPixelCallback(message) {
-        console.log("SetPixel : " + message);
+        var pixel = require('./matrix').parseMqttSetPixelMessage(message);
+        require('./database').setPixel(pixel)
     }
 
     onSetMatrixCallback(message) {
-        console.log("SetMatrix : " + message);
+        console.log("callback : " + message);
     }
 }
 

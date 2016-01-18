@@ -29,7 +29,7 @@ class Database {
     }
 
     setPixel(pixel) {
-        this.refPixels.child(pixel.id).set(pixel, function (err) {
+        this.refPixels.child(pixel.id).set(pixel.toJSON(), function (err) {
             if (err)
                 console.error(err)
         })

@@ -1,14 +1,13 @@
 "use strict";
 
-
 const _ = require('lodash'),
     async = require('async'),
     Pixel = require('./pixel').Pixel,
     Color = require('./pixel').Color,
-    config = require('./../config/index'),
-    database = require('./database');
+    config = require('./../config/index');
 
-var mqtt = require('./mqtt');
+var mqtt = require('./mqtt'),
+    database = require('./database');
 
 class Matrix {
     constructor() {
@@ -65,6 +64,7 @@ class Matrix {
     }
 
     parseMqttSetPixelMessage(message) {
+        message = message.toString();
         var array = message.split(this.separator);
         var xy = this.to2D(array[0]);
         var color = new Color(array.splice(1));
