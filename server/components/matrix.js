@@ -26,11 +26,13 @@ class Matrix {
     }
 
     setPixel(pixel, callback) {
+        const command = 'command/setPixel';
+
         var color = new Color(pixel.color);
         var xy = pixel.id.split('-');
 
         const message = this.getMqttSetPixelMessage(xy[0], xy[1], color);
-        mqtt.sendMessage('setPixel', message, callback)
+        mqtt.sendMessage(command, message, callback)
     }
 
     to2D(n) {
