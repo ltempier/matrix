@@ -29,9 +29,16 @@ class Database {
     }
 
     setPixel(pixel) {
-        this.refPixels.child(pixel.id).set(pixel.toJSON(), function (err) {
-            if (err)
-                console.error(err)
+        if (pixel.id.indexOf("NaN") < 0)
+            this.refPixels.child(pixel.id).set(pixel.toJSON(), function (err) {
+                if (err)
+                    console.error(err)
+            })
+    }
+
+    setMatrix(matrix) {
+        matrix.forEach((pixel) => {
+            this.setPixel(pixel)
         })
     }
 }

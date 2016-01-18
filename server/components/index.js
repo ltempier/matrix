@@ -13,7 +13,7 @@ module.exports.init = function (app, callback) {
         if (err)
             return callback(err);
 
-        require('./matrix').init(30, 10);
+        require('./matrix').init(40, 20);
         require('./routes')(app);
         callback()
     })

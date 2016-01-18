@@ -22,6 +22,14 @@ class Matrix {
             width: this.width,
             height: this.height
         });
+
+        var matrix = [];
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
+                matrix.push(new Pixel(x, y, new Color(0, 0, 0)))
+            }
+        }
+        database.setMatrix(matrix)
     }
 
     setPixel(pixel, callback) {
@@ -31,6 +39,13 @@ class Matrix {
         var xy = pixel.id.split('-');
 
         const message = this.getMqttSetPixelMessage(xy[0], xy[1], color);
+        mqtt.sendMessage(command, message, callback)
+    }
+
+    setMatrix(matrix, callback) {
+        const command = 'command/setMatrix';
+
+        const message = this.getMqttSetMatrixMessage(matrix);
         mqtt.sendMessage(command, message, callback)
     }
 
@@ -63,12 +78,30 @@ class Matrix {
         return [n].concat(color.toArray()).join(this.separator);
     }
 
+    getMqttSetMatrixMessage(pixelArray) {
+        return _.map(pixelArray, (pixel) => {
+            return this.getMqttSetPixelMessage(pixel.x, pixel.y, pixel.color)
+        }).join(this.separator)
+    }
+
     parseMqttSetPixelMessage(message) {
         message = message.toString();
         var array = message.split(this.separator);
         var xy = this.to2D(array[0]);
         var color = new Color(array.splice(1));
         return new Pixel(xy[0], xy[1], color)
+    }
+
+    parseMqttSetMatrixMessage(message) {
+        message = message.toString();
+        var array = message.split(this.separator);
+        var matrix = [];
+        for (var n = 0; n < array.length; n += 4) {
+            var xy = this.to2D(array[n]);
+            var color = new Color(array[n + 1], array[n + 2], array[n + 3]);
+            matrix.push(new Pixel(xy[0], xy[1], color))
+        }
+        return matrix
     }
 
     static isEven(n) {

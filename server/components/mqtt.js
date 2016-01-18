@@ -60,7 +60,8 @@ class Mqtt {
     }
 
     onSetMatrixCallback(message) {
-        console.log("callback : " + message);
+        var matrix = require('./matrix').parseMqttSetMatrixMessage(message);
+        require('./database').setMatrix(matrix)
     }
 }
 
