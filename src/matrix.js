@@ -13,6 +13,8 @@ class Matrix {
     }
 
     setPixel(pixel) {
+        if (!pixel)
+            return;
         const rgb = pixel.color;
         $(this.id + ' #' + pixel.x + '-' + pixel.y).css('background-color', 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
     }
@@ -35,8 +37,7 @@ class Matrix {
                 $td.addClass('pixel');
                 $td.attr('id', [x, y].join("-"));
                 $td.on('click', function () {
-                    var xy = $(this).attr('id').split('-').map(v => parseInt(v));
-                    self.onPixelClick($(this), xy)
+                    self.onPixelClick($(this), $(this).attr('id'))
                 });
                 $tr.append($td);
             }

@@ -19,15 +19,22 @@ class Matrix {
         this.width = width;
         this.height = height;
 
-        database.set({
-            size: {
-                width: this.width,
-                height: this.height
-            }
+        database.setSize({
+            width: this.width,
+            height: this.height
         });
     }
 
+    setPixel(pixel, callback) {
+        var color = new Color(pixel.color);
+        var xy = pixel.id.split('-');
+
+        const message = this.getMqttSetPixelMessage(xy[0], xy[1], color);
+        mqtt.sendMessage('setPixel', message, callback)
+    }
+
     to2D(n) {
+        n = parseInt(n);
         var y = Math.floor(n / this.width),
             x = n - (y * this.width);
         if (Matrix.isOdd(y))
@@ -36,12 +43,30 @@ class Matrix {
     }
 
     to1D(x, y) {
+        if (_.isArray(x) && _.isUndefined(y)) {
+            y = x[1];
+            x = x[0]
+        }
+        x = parseInt(x);
+        y = parseInt(y);
         var n = this.width * y;
         if (Matrix.isOdd(y))
             n += (this.width - x - 1);
         else
             n += x;
         return n
+    }
+
+    getMqttSetPixelMessage(x, y, color) {
+        const n = this.to1D(x, y);
+        return [n].concat(color.toArray()).join(this.separator);
+    }
+
+    parseMqttSetPixelMessage(message) {
+        var array = message.split(this.separator);
+        var xy = this.to2D(array[0]);
+        var color = new Color(array.splice(1));
+        return new Pixel(xy[0], xy[1], color)
     }
 
     static isEven(n) {

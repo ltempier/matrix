@@ -7,6 +7,10 @@ const config = require('./../config/index'),
 class Database {
     constructor() {
         this.ref = new Firebase(config.firebase.url);
+
+        this.refSize = this.ref.child('size');
+        this.refPixels = this.ref.child('pixels');
+
         this.tokenGenerator = new FirebaseTokenGenerator(config.firebase.secret);
     }
 
@@ -17,8 +21,15 @@ class Database {
         this.ref.authWithCustomToken(this.token, callback)
     }
 
-    set(object) {
-        this.ref.set(object, function (err) {
+    setSize(object) {
+        this.refSize.set(object, function (err) {
+            if (err)
+                console.error(err)
+        })
+    }
+
+    setPixel(pixel) {
+        this.refPixels.child(pixel.id).set(pixel, function (err) {
             if (err)
                 console.error(err)
         })

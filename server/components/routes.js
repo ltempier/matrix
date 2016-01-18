@@ -5,7 +5,12 @@ var matrix = require('./matrix');
 module.exports = function (app) {
 
     app.route('/api/pixel')
-        .get(function (req, res) {
-            res.status(200).json({});
+        .put(function (req, res) {
+            matrix.setPixel(req.body, function (err) {
+                if (err)
+                    res.sendStatus(500);
+                else
+                    res.sendStatus(200)
+            })
         });
 };

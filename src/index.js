@@ -9,11 +9,21 @@ var Matrix = require('./matrix');
 var Firebase = require('firebase');
 
 var sizeFirebase = new Firebase('https://matrixled.firebaseio.com/size');
-var pixelsFirebase = new Firebase('https://matrixled.firebaseio.com/pixels');
 
-Matrix.prototype.onPixelClick = function ($el, xy) {
+Matrix.prototype.onPixelClick = function ($el, id) {
     const rgb = colorPicker.getRGB();
-    $el.css('background-color', 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
+
+    $.ajax({
+        url: '/api/pixel',
+        type: 'PUT',
+        data: {
+            id: id,
+            color: rgb
+        },
+        success: function () {
+            $el.css('background-color', 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
+        }
+    })
 
 };
 
@@ -34,7 +44,7 @@ $(document).ready(function () {
 
         for (var x = 0; x < size.width; x++) {
             for (var y = 0; y < size.height; y++) {
-                const pixelFirebase = new Firebase('https://matrixled.firebaseio.com/pixels/' + [x, y].join('-'))
+                const pixelFirebase = new Firebase('https://matrixled.firebaseio.com/pixels/' + [x, y].join('-'));
                 pixelFirebase.on('value', function (snapshot) {
                     const pixel = snapshot.val();
                     matrix.setPixel(pixel)

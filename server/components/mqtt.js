@@ -1,27 +1,39 @@
 "use strict";
 
 const config = require('./../config/index'),
-    mqtt = require('mqtt');
+    mqtt = require('mqtt'),
+    database = require('./database');
 
 class Mqtt {
     constructor() {
-
         this.isConnect = false;
-
     }
 
     init(callback) {
-        var client = mqtt.connect(config.mqtt);
-        client.on('connect', ()  => {
+        this.client = mqtt.connect(config.mqtt);
+        this.client.on('connect', ()  => {
 
-            client.subscribe('/log', () => {
-                client.on('message', this.onMessage);
-            });
-            this.client = client;
+            this.client.subscribe('/log');
+            this.client.subscribe('callback/setPixel');
+            this.client.subscribe('callback/setMatrix');
 
             if (!this.isConnect) {
                 this.isConnect = true;
                 callback()
+            }
+        });
+
+        this.client.on('message', (topic, message, packet) => {
+            switch (topic) {
+                case '/log':
+                    this.onLog(message);
+                    break;
+                case 'callback/setPixel':
+                    this.onSetPixelCallback(message);
+                    break;
+                case 'callback/setMatrix':
+                    this.onSetMatrixCallback(message);
+                    break;
             }
         });
     }
@@ -37,8 +49,16 @@ class Mqtt {
         this.client.publish(topic, message, callback);
     }
 
-    onMessage(topic, message, packet) {
-        console.log("Received '" + message + "' on '" + topic + "'");
+    onLog(message) {
+        console.log("log : " + message);
+    }
+
+    onSetPixelCallback(message) {
+        console.log("SetPixel : " + message);
+    }
+
+    onSetMatrixCallback(message) {
+        console.log("SetMatrix : " + message);
     }
 }
 

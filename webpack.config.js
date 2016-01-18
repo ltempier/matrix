@@ -5,7 +5,7 @@ const path = require('path'),
 
 module.exports = {
     cache: true,
-    devtool: 'source-map',
+    devtool: 'eval',
     context: clientPath,
     entry: [
         'webpack-hot-middleware/client?reload=true',

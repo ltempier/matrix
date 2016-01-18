@@ -8,6 +8,8 @@ class Pixel {
         this.x = x;
         this.y = y;
 
+        this.id = [x, y].join('-');
+
         this.color = new Color(color)
     }
 
