@@ -44,12 +44,22 @@ class Color {
     set() {
         var color = {};
         if (arguments.length == 1) {
-            if (_.isArray(arguments[0]))
+            if (_.isArray(arguments[0])) {
                 arguments[0].forEach((value, index) => {
                     var key = this.colorProperties[index];
                     if (key)
                         color[key] = value
-                });
+                })
+            }
+            else if (_.isString(arguments[0])) {
+                while (arguments[0].charAt(0) === '#')
+                    arguments[0] = arguments[0].substr(1);
+                var num = parseInt(arguments[0], 16);
+                var rgb = [num >> 16, num >> 8 & 255, num & 255];
+                this.r = rgb[0];
+                this.g = rgb[1];
+                this.b = rgb[2];
+            }
             else if (_.isObject(arguments[0])) {
                 color = arguments[0]
             }
