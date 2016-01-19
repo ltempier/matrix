@@ -21,8 +21,8 @@ class Database {
         this.ref.authWithCustomToken(this.token, callback)
     }
 
-    setSize(object) {
-        this.refSize.set(object, function (err) {
+    setSize(size) {
+        this.refSize.set(size, function (err) {
             if (err)
                 console.error(err)
         })

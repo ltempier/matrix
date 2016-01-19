@@ -12,24 +12,22 @@ var mqtt = require('./mqtt'),
 class Matrix {
     constructor() {
         this.separator = ",";
+        this.width = 0;
+        this.height = 0;
     }
 
-    init(width, height) {
+    setup() {
+        this.setSize(this.width, this.height)
+    }
+
+    setSize(width, height) {
+        const command = 'command/setSize';
+
         this.width = width;
         this.height = height;
 
-        database.setSize({
-            width: this.width,
-            height: this.height
-        });
-
-        var matrix = [];
-        for (var x = 0; x < width; x++) {
-            for (var y = 0; y < height; y++) {
-                matrix.push(new Pixel(x, y, new Color(0, 0, 0)))
-            }
-        }
-        database.setMatrix(matrix)
+        const message = [width, height].join(this.separator);
+        mqtt.sendMessage(command, message)
     }
 
     setPixel(pixel, callback) {
@@ -102,6 +100,16 @@ class Matrix {
             matrix.push(new Pixel(xy[0], xy[1], color))
         }
         return matrix
+    }
+
+    parseMqttSetSizeMessage(message) {
+        message = message.toString();
+        var array = message.split(this.separator);
+        var size = {
+            width: parseInt(array[0]),
+            height: parseInt(array[1])
+        };
+        return size
     }
 
     static isEven(n) {

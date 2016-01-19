@@ -27,11 +27,17 @@ class Mqtt {
                 case '/log':
                     this.onLog(message);
                     break;
+                case '/setup':
+                    this.onSetup();
+                    break;
                 case 'callback/setPixel':
                     this.onSetPixelCallback(message);
                     break;
                 case 'callback/setMatrix':
                     this.onSetMatrixCallback(message);
+                    break;
+                case 'callback/setSize':
+                    this.onSetSizeCallback(message);
                     break;
             }
         });
@@ -51,7 +57,11 @@ class Mqtt {
     }
 
     onLog(message) {
-        console.log("log : " + message);
+        console.log("log : " + message.toString());
+    }
+
+    onSetup() {
+        require('./matrix').setup()
     }
 
     onSetPixelCallback(message) {
@@ -62,6 +72,11 @@ class Mqtt {
     onSetMatrixCallback(message) {
         var matrix = require('./matrix').parseMqttSetMatrixMessage(message);
         require('./database').setMatrix(matrix)
+    }
+
+    onSetSizeCallback(message) {
+        var size = require('./matrix').parseMqttSetSizeMessage(message);
+        require('./database').setSize(size)
     }
 }
 
