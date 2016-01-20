@@ -11,13 +11,31 @@ var mqtt = require('./mqtt'),
 
 class Matrix {
     constructor() {
+        this.defaultColor = "#EEEEEE";
         this.separator = ",";
         this.width = 0;
         this.height = 0;
+        
+        setInterval(this.random.bind(this), 1000)
+    }
+
+    random() {
+        const githubColors = ['#EEEEEE', '#D6E685', '#8CC665', '#44A340', '#1E6823'];
+        this.setPixel(new Pixel(_.random(this.width),
+            _.random(this.height),
+            new Color(_.sample(githubColors))
+        ))
     }
 
     setup() {
-        this.setSize(this.width, this.height)
+        this.setSize(this.width, this.height);
+        var dbMatrix = [];
+        for (var x = 0; x < this.width; x++) {
+            for (var y = 0; y < this.height; y++) {
+                dbMatrix.push(new Pixel(x, y, new Color(this.defaultColor)))
+            }
+        }
+        database.setMatrix(dbMatrix)
     }
 
     setSize(width, height) {

@@ -6,15 +6,16 @@ const config = require('./../config/index'),
 class Mqtt {
     constructor() {
         this.isConnect = false;
+        this.topics = ['/log', '/setup', 'callback/setPixel', 'callback/setMatrix', 'callback/setSize']
     }
 
     init(callback) {
         this.client = mqtt.connect(config.mqtt);
         this.client.on('connect', ()  => {
 
-            this.client.subscribe('/log');
-            this.client.subscribe('callback/setPixel');
-            this.client.subscribe('callback/setMatrix');
+            this.topics.forEach((topic) => {
+                this.client.subscribe(topic);
+            });
 
             if (!this.isConnect) {
                 this.isConnect = true;

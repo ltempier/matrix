@@ -56,7 +56,7 @@ class Matrix {
 
         $('#matrix td').each(function () {
             $(this).width(size);
-            $(this).height(size - 2);
+            $(this).height(size - 4);
         })
     }
 }

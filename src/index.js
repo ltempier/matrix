@@ -12,7 +12,6 @@ var sizeFirebase = new Firebase('https://matrixled.firebaseio.com/size');
 
 Matrix.prototype.onPixelClick = function ($el, id) {
     const rgb = colorPicker.getRGB();
-
     $.ajax({
         url: '/api/pixel',
         type: 'PUT',
@@ -48,6 +47,9 @@ $(document).ready(function () {
                 pixelFirebase.on('value', function (snapshot) {
                     const pixel = snapshot.val();
                     matrix.setPixel(pixel)
+
+
+                    console.log('last date: ', Date())
                 })
             }
         }
