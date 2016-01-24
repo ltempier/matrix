@@ -3,7 +3,8 @@ var $ = require('jquery');
 class Matrix {
     constructor() {
         this.id = '#matrix';
-        this.minSize = 10
+        this.minSize = 10;
+        this.maxSize = 25
     }
 
     setSize(width, height) {
@@ -53,6 +54,7 @@ class Matrix {
     resizeMatrix() {
         var size = $('.matrix-container').width() / this.width;
         size = size < this.minSize ? this.minSize : size;
+        size = size > this.maxSize? this.maxSize: size;
 
         $('#matrix td').each(function () {
             $(this).width(size);

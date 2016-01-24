@@ -15,8 +15,10 @@ class Matrix {
         this.separator = ",";
         this.width = 0;
         this.height = 0;
-        
-        setInterval(this.random.bind(this), 1000)
+
+        this.orientation = "vertical"; // "horizontal" || "vertical"
+
+        //setInterval(this.random.bind(this), 1000)
     }
 
     random() {
@@ -67,10 +69,18 @@ class Matrix {
 
     to2D(n) {
         n = parseInt(n);
-        var y = Math.floor(n / this.width),
+        var x, y;
+        if (this.orientation == "horizontal") {
+            y = Math.floor(n / this.width);
             x = n - (y * this.width);
-        if (Matrix.isOdd(y))
-            x = this.width - x - 1;
+            if (Matrix.isOdd(y))
+                x = this.width - x - 1;
+        } else if (this.orientation == "vertical") {
+            x = Math.floor(n / this.height);
+            y = n - (x * this.height);
+            if (Matrix.isOdd(x))
+                y = this.height - y - 1;
+        }
         return [x, y]
     }
 
@@ -81,11 +91,20 @@ class Matrix {
         }
         x = parseInt(x);
         y = parseInt(y);
-        var n = this.width * y;
-        if (Matrix.isOdd(y))
-            n += (this.width - x - 1);
-        else
-            n += x;
+        var n;
+        if (this.orientation == "horizontal") {
+            n = this.width * y;
+            if (Matrix.isOdd(y))
+                n += (this.width - x - 1);
+            else
+                n += x;
+        } else if (this.orientation == "vertical") {
+            n = this.height * x;
+            if (Matrix.isOdd(x))
+                n += (this.height - y - 1);
+            else
+                n += y;
+        }
         return n
     }
 
