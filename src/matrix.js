@@ -4,7 +4,7 @@ class Matrix {
     constructor() {
         this.id = '#matrix';
         this.minSize = 10;
-        this.maxSize = 25
+        this.maxSize = 50
     }
 
     setSize(width, height) {
