@@ -33,7 +33,8 @@ class Mqtt {
 
             switch (topic) {
                 case '/log':
-                    //this.onLog(message);
+                    if (!this.log)
+                        this.onLog(message);
                     break;
                 case '/setup':
                     require('./matrix').onSetupCallback();

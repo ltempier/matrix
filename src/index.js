@@ -21,7 +21,6 @@ Matrix.prototype.onPixelClick = function ($el, id) {
             $el.css('background-color', 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
         }
     })
-
 };
 
 var colorPicker = new ColorPicker({
@@ -45,15 +44,11 @@ $(document).ready(function () {
                     const pixelFirebase = new Firebase(firebaseUrl + '/pixels/' + [x, y].join('-'));
                     pixelFirebase.on('value', function (snapshot) {
                         const pixel = snapshot.val();
-                        matrix.setPixel(pixel)
-
-
-                        console.log('last date: ', Date())
+                        matrix.setPixel(pixel);
                     })
                 }
             }
         })
     })
-
 });
 

@@ -30,35 +30,49 @@ class Matrix {
     }
 
     setSize(width, height) {
-        const command = 'command/setSize';
-
         this.width = width;
         this.height = height;
 
         const message = [width, height].join(this.separator);
-        mqtt.sendMessage(command, message)
+        mqtt.sendMessage('command/setSize', message)
     }
 
-    setPixel(pixel) {
-        const command = 'command/setPixel';
+    setPixel(pixel, callback) {
+        if (!callback || typeof callback !== 'function')
+            callback = function (err) {
+                if (err)
+                    console.error(err);
+            };
 
         var color = new Color(pixel.color);
         var xy = pixel.id.split('-');
 
         const message = this.getMqttSetPixelMessage(xy[0], xy[1], color);
-        mqtt.sendMessage(command, message)
+        mqtt.sendMessage('command/setPixel', message, callback)
     }
 
-    setMatrix(matrix) {
-        const command = 'command/setMatrix';
+    setMatrix(matrix, callback) {
+        if (!callback || typeof callback !== 'function')
+            callback = function (err) {
+                if (err)
+                    console.error(err);
+            };
+
+        matrix = matrix.slice(0, 20);
+
         var id = generateId(this);
         var message = this.getMqttSetMatrixMessage(matrix);
         message = id + this.separator + message;
-        mqtt.sendMessage(command, message);
-        this.setMatrixBuffer[id] = matrix;
-        setTimeout(()=> {
-            this.setMatrixBuffer[id] = null;
-        }, 10000);
+        mqtt.sendMessage('command/setMatrix', message, (err) => {
+            if (err)
+                return callback(err);
+            this.setMatrixBuffer[id] = matrix;
+            setTimeout(() => {
+                this.setMatrixBuffer[id] = null;
+            }, 10000);
+            callback()
+        });
+
 
         function generateId(self) {
             var id = 0;
@@ -137,6 +151,7 @@ class Matrix {
             }
         }
         this.setMatrix(dbMatrix);
+        database.setMatrix(dbMatrix);
     }
 
     onSetMatrixCallback(message) {

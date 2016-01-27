@@ -9,20 +9,20 @@ var _ = require('lodash'),
 module.exports = function (app) {
 
 
-    app.route('/setmatrix')
+    app.route('/test')
         .get(function (req, res) {
             var dbMatrix = [];
-
-            var color1 = "#DE4508";
-            var color2 = "#5ac8fa";
-
             for (var x = 0; x < matrix.width; x++) {
                 for (var y = 0; y < matrix.height; y++) {
-                    dbMatrix.push(new Pixel(x, y, new Color(_.sample([color1, color2]))))
+                    dbMatrix.push(new Pixel(x, y, new Color(255, 255, 255)))
                 }
             }
-            matrix.setMatrix(dbMatrix);
-            res.sendStatus(200)
+            matrix.setMatrix(dbMatrix, function (err) {
+                if (err)
+                    res.sendStatus(500);
+                else
+                    res.sendStatus(200)
+            })
         });
 
     app.route('/api/firebase/url')
@@ -33,6 +33,16 @@ module.exports = function (app) {
     app.route('/api/pixel')
         .put(function (req, res) {
             matrix.setPixel(req.body, function (err) {
+                if (err)
+                    res.sendStatus(500);
+                else
+                    res.sendStatus(200)
+            })
+        });
+
+    app.route('/api/matrix')
+        .put(function (req, res) {
+            matrix.setMatrix(req.body, function (err) {
                 if (err)
                     res.sendStatus(500);
                 else
