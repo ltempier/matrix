@@ -17,6 +17,7 @@ class Matrix {
 
         this.orientation = "vertical"; // "horizontal" || "vertical"
 
+        this.setMatrixBuffer = {};
         //setInterval(this.random.bind(this), 1000)
     }
 
@@ -38,20 +39,33 @@ class Matrix {
         mqtt.sendMessage(command, message)
     }
 
-    setPixel(pixel, callback) {
+    setPixel(pixel) {
         const command = 'command/setPixel';
 
         var color = new Color(pixel.color);
         var xy = pixel.id.split('-');
 
         const message = this.getMqttSetPixelMessage(xy[0], xy[1], color);
-        mqtt.sendMessage(command, message, callback)
+        mqtt.sendMessage(command, message)
     }
 
-    setMatrix(matrix, callback) {
+    setMatrix(matrix) {
         const command = 'command/setMatrix';
-        const message = this.getMqttSetMatrixMessage(matrix);
-        mqtt.sendMessage(command, message, callback)
+        var id = generateId(this);
+        var message = this.getMqttSetMatrixMessage(matrix);
+        message = id + this.separator + message;
+        mqtt.sendMessage(command, message);
+        this.setMatrixBuffer[id] = matrix;
+        setTimeout(()=> {
+            this.setMatrixBuffer[id] = null;
+        }, 10000);
+
+        function generateId(self) {
+            var id = 0;
+            while (self.setMatrixBuffer[id])
+                id++;
+            return id
+        }
     }
 
     to2D(n) {
@@ -127,14 +141,16 @@ class Matrix {
 
     onSetMatrixCallback(message) {
         message = message.toString();
-        var array = message.split(this.separator);
-        var matrix = [];
-        for (var n = 0; n < array.length; n += 4) {
-            var xy = this.to2D(array[n]);
-            var color = new Color(array[n + 1], array[n + 2], array[n + 3]);
-            matrix.push(new Pixel(xy[0], xy[1], color))
-        }
-        database.setMatrix(matrix)
+        /*var array = message.split(this.separator);
+         var matrix = [];
+         for (var n = 0; n < array.length; n += 4) {
+         var xy = this.to2D(array[n]);
+         var color = new Color(array[n + 1], array[n + 2], array[n + 3]);
+         matrix.push(new Pixel(xy[0], xy[1], color))
+         }*/
+        var matrix = this.setMatrixBuffer[message];
+        if (matrix)
+            database.setMatrix(matrix)
     }
 
     onSetSizeCallback(message) {
@@ -143,8 +159,8 @@ class Matrix {
         this.width = parseInt(array[0]);
         this.height = parseInt(array[1]);
         database.setSize({
-            width:this.width,
-            height:this.height
+            width: this.width,
+            height: this.height
         })
     }
 
