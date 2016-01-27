@@ -58,7 +58,7 @@ class Matrix {
                     console.error(err);
             };
 
-        matrix = matrix.slice(0, 20);
+        matrix = matrix.slice(0, 50);
 
         var id = generateId(this);
         var message = this.getMqttSetMatrixMessage(matrix);
