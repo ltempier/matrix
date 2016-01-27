@@ -8,16 +8,17 @@ module.exports = {
         url: 'mongodb://toor:2HLV3g2jNiB252o@ds045475.mongolab.com:45475/matrix'
     },
     firebase: {
-        url: 'https://matrixled.firebaseio.com/',
-        secret: '2XFZUirWPGqLVuuCQTngHpVVFZXNa6N8UOlA3eJZ',
+        url: 'https://matrixdev.firebaseio.com/',
+        secret: 'gIyaDWGE9aj8VeNJRfWrgcDwI0FJjcMmxaEh8ZIk',
         uid: 'server'
     },
     mqtt: {
-        url: 'mqtt://toor:2HLV3g2jNiB252o@m20.cloudmqtt.com:19793',
-        port: 19793,
-        hostname: 'm20.cloudmqtt.com',
-        username: 'toor',
-        password: '2HLV3g2jNiB252o',
-        protocol: 'mqtt'
+        port: 1883,
+        hostname: '195.154.118.152',
+        //username: 'toor',
+        //password: '2HLV3g2jNiB252o',
+        protocol: 'mqtt',
+        protocolId: 'MQIsdp',
+        protocolVersion: 3
     }
 };

@@ -5,6 +5,7 @@ const config = require('./../config/index'),
 
 class Mqtt {
     constructor() {
+        this.log = true;
         this.isConnect = false;
         this.topics = ['/log', '/setup', 'callback/setPixel', 'callback/setMatrix', 'callback/setSize']
     }
@@ -19,29 +20,39 @@ class Mqtt {
 
             if (!this.isConnect) {
                 this.isConnect = true;
+
+                console.log('MQTT init');
                 callback()
             }
         });
 
         this.client.on('message', (topic, message) => {
+
+            if (this.log)
+                console.log("MQTT <- " + topic + " " + message);
+
             switch (topic) {
                 case '/log':
-                    this.onLog(message);
+                    //this.onLog(message);
                     break;
                 case '/setup':
-                    this.onSetup();
+                    require('./matrix').onSetupCallback();
                     break;
                 case 'callback/setPixel':
-                    this.onSetPixelCallback(message);
+                    require('./matrix').onSetPixelCallback(message);
                     break;
                 case 'callback/setMatrix':
-                    this.onSetMatrixCallback(message);
+                    require('./matrix').onSetMatrixCallback(message);
                     break;
                 case 'callback/setSize':
-                    this.onSetSizeCallback(message);
+                    require('./matrix').onSetSizeCallback(message);
                     break;
             }
         });
+
+        this.client.on('error', (err) => {
+            console.error(err)
+        })
     }
 
     sendMessage(topic, message, callback) {
@@ -54,30 +65,14 @@ class Mqtt {
         if (!this.client)
             return callback(new Error('No mqtt client'));
 
+        if (this.log)
+            console.log("MQTT -> " + topic + " " + message);
+
         this.client.publish(topic, message, callback);
     }
 
     onLog(message) {
         console.log("log : " + message.toString());
-    }
-
-    onSetup() {
-        require('./matrix').setup()
-    }
-
-    onSetPixelCallback(message) {
-        var pixel = require('./matrix').parseMqttSetPixelMessage(message);
-        require('./database').setPixel(pixel)
-    }
-
-    onSetMatrixCallback(message) {
-        var matrix = require('./matrix').parseMqttSetMatrixMessage(message);
-        require('./database').setMatrix(matrix)
-    }
-
-    onSetSizeCallback(message) {
-        var size = require('./matrix').parseMqttSetSizeMessage(message);
-        require('./database').setSize(size)
     }
 }
 

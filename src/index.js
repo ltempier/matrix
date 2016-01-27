@@ -34,25 +34,30 @@ var colorPicker = new ColorPicker({
 
 $(document).ready(function () {
 
-    var matrix = new Matrix();
-    window.onresize = matrix.resizeMatrix.bind(matrix);
 
-    sizeFirebase.on('value', function (snapshot) {
-        const size = snapshot.val();
-        matrix.setSize(size.width, size.height);
+    $.get('/api/firebase/url', function (firebaseUrl) {
 
-        for (var x = 0; x < size.width; x++) {
-            for (var y = 0; y < size.height; y++) {
-                const pixelFirebase = new Firebase('https://matrixled.firebaseio.com/pixels/' + [x, y].join('-'));
-                pixelFirebase.on('value', function (snapshot) {
-                    const pixel = snapshot.val();
-                    matrix.setPixel(pixel)
+        var matrix = new Matrix();
+        window.onresize = matrix.resizeMatrix.bind(matrix);
+
+        sizeFirebase.on('value', function (snapshot) {
+            const size = snapshot.val();
+            matrix.setSize(size.width, size.height);
+
+            for (var x = 0; x < size.width; x++) {
+                for (var y = 0; y < size.height; y++) {
+                    const pixelFirebase = new Firebase(firebaseUrl + '/pixels/' + [x, y].join('-'));
+                    pixelFirebase.on('value', function (snapshot) {
+                        const pixel = snapshot.val();
+                        matrix.setPixel(pixel)
 
 
-                    console.log('last date: ', Date())
-                })
+                        console.log('last date: ', Date())
+                    })
+                }
             }
-        }
+        })
     })
+
 });
 

@@ -18,7 +18,12 @@ class Database {
         this.token = this.tokenGenerator.createToken({
             uid: config.firebase.uid
         });
-        this.ref.authWithCustomToken(this.token, callback)
+        this.ref.authWithCustomToken(this.token, function(err){
+            if(err)
+                return callback(err);
+            console.log('Firebase init');
+            callback()
+        })
     }
 
     setSize(size) {

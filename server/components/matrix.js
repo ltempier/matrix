@@ -3,15 +3,14 @@
 const _ = require('lodash'),
     async = require('async'),
     Pixel = require('./pixel').Pixel,
-    Color = require('./pixel').Color,
-    config = require('./../config/index');
+    Color = require('./pixel').Color;
 
 var mqtt = require('./mqtt'),
     database = require('./database');
 
 class Matrix {
     constructor() {
-        this.defaultColor = "#EEEEEE";
+        this.defaultColor = "#000000";
         this.separator = ",";
         this.width = 0;
         this.height = 0;
@@ -27,17 +26,6 @@ class Matrix {
             _.random(this.height),
             new Color(_.sample(githubColors))
         ))
-    }
-
-    setup() {
-        this.setSize(this.width, this.height);
-        var dbMatrix = [];
-        for (var x = 0; x < this.width; x++) {
-            for (var y = 0; y < this.height; y++) {
-                dbMatrix.push(new Pixel(x, y, new Color(this.defaultColor)))
-            }
-        }
-        database.setMatrix(dbMatrix)
     }
 
     setSize(width, height) {
@@ -62,7 +50,6 @@ class Matrix {
 
     setMatrix(matrix, callback) {
         const command = 'command/setMatrix';
-
         const message = this.getMqttSetMatrixMessage(matrix);
         mqtt.sendMessage(command, message, callback)
     }
@@ -119,15 +106,26 @@ class Matrix {
         }).join(this.separator)
     }
 
-    parseMqttSetPixelMessage(message) {
+    onSetPixelCallback(message) {
         message = message.toString();
         var array = message.split(this.separator);
         var xy = this.to2D(array[0]);
-        var color = new Color(array.splice(1));
-        return new Pixel(xy[0], xy[1], color)
+        var pixel = new Pixel(xy[0], xy[1], new Color(array.splice(1)));
+        database.setPixel(pixel)
     }
 
-    parseMqttSetMatrixMessage(message) {
+    onSetupCallback() {
+        this.setSize(this.width, this.height);
+        var dbMatrix = [];
+        for (var x = 0; x < this.width; x++) {
+            for (var y = 0; y < this.height; y++) {
+                dbMatrix.push(new Pixel(x, y, new Color(this.defaultColor)))
+            }
+        }
+        this.setMatrix(dbMatrix);
+    }
+
+    onSetMatrixCallback(message) {
         message = message.toString();
         var array = message.split(this.separator);
         var matrix = [];
@@ -136,17 +134,18 @@ class Matrix {
             var color = new Color(array[n + 1], array[n + 2], array[n + 3]);
             matrix.push(new Pixel(xy[0], xy[1], color))
         }
-        return matrix
+        database.setMatrix(matrix)
     }
 
-    parseMqttSetSizeMessage(message) {
+    onSetSizeCallback(message) {
         message = message.toString();
         var array = message.split(this.separator);
-        var size = {
-            width: parseInt(array[0]),
-            height: parseInt(array[1])
-        };
-        return size
+        this.width = parseInt(array[0]);
+        this.height = parseInt(array[1]);
+        database.setSize({
+            width:this.width,
+            height:this.height
+        })
     }
 
     static isEven(n) {

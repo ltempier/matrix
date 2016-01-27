@@ -13,7 +13,7 @@ module.exports.init = function (app, callback) {
         if (err)
             return callback(err);
 
-        require('./matrix').setSize(19, 1);
+        require('./matrix').setSize(20, 1);
         require('./routes')(app);
         callback()
     })
