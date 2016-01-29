@@ -18,7 +18,28 @@ class Matrix {
         this.orientation = "vertical"; // "horizontal" || "vertical"
 
         this.setMatrixBuffer = {};
+
+
+        this.test()
         //setInterval(this.random.bind(this), 1000)
+    }
+
+    test() {
+
+        var n = 0;
+        setInterval(() => {
+            var xy = this.to2D(n);
+            this.setPixel(new Pixel(xy[0], xy[1], new Color("#000000")));
+            n++;
+
+            if (n > this.width * this.height)
+                n = 0;
+            xy = this.to2D(n);
+            this.setPixel(new Pixel(xy[0], xy[1], new Color("#ff0000")));
+
+
+        }, 1000)
+
     }
 
     random() {

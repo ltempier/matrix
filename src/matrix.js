@@ -4,7 +4,7 @@ class Matrix {
     constructor() {
         this.id = '#matrix';
         this.minSize = 10;
-        this.maxSize = 50
+        this.maxSize = 25
     }
 
     setSize(width, height) {
@@ -57,7 +57,7 @@ class Matrix {
         size = size > this.maxSize? this.maxSize: size;
 
         $('#matrix td').each(function () {
-            $(this).width(size);
+            $(this).width(size*2);
             $(this).height(size - 4);
         })
     }
