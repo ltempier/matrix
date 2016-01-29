@@ -49,6 +49,17 @@ $(document).ready(function () {
                 }
             }
         })
-    })
+    });
+
+    $(".launch-rainbow").click(function(){
+      $.ajax({
+          url: '/api/sequence',
+          type: 'PUT',
+          data: {"sequence": "rainbow"},
+          success: function () {
+              console.log("SUCCESS rainbow");
+          }
+      })
+    });
 });
 

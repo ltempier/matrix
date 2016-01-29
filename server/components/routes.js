@@ -28,6 +28,17 @@ module.exports = function (app) {
     app.route('/api/firebase/url')
         .get(function (req, res) {
             res.status(200).send(config.firebase.url)
+          });
+
+    app.route('/api/sequence')
+        .put(function (req, res) {
+            matrix.launchSequence(req.body["sequence"], function (err) {
+                if (err){
+                    res.sendStatus(500);
+                }
+                else
+                    res.sendStatus(200)
+            })
         });
 
     app.route('/api/pixel')

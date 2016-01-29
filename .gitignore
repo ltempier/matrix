@@ -1,4 +1,5 @@
 .idea
 matrix_server.iml
 matrix.iml
+dist
 node_modules

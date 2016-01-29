@@ -20,7 +20,7 @@ class Matrix {
         this.setMatrixBuffer = {};
 
 
-        this.test()
+        // this.test()
         //setInterval(this.random.bind(this), 1000)
     }
 
@@ -70,6 +70,15 @@ class Matrix {
 
         const message = this.getMqttSetPixelMessage(xy[0], xy[1], color);
         mqtt.sendMessage('command/setPixel', message, callback)
+    }
+
+    launchSequence(message, callback) {
+        if (!callback || typeof callback !== 'function')
+            callback = function (err) {
+                if (err)
+                    console.error(err);
+            };
+        mqtt.sendMessage('command/launchSequence', message, callback)
     }
 
     setMatrix(matrix, callback) {
