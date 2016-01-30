@@ -8,7 +8,6 @@ var _ = require('lodash'),
 
 module.exports = function (app) {
 
-
     app.route('/test')
         .get(function (req, res) {
             var dbMatrix = [];
@@ -25,15 +24,10 @@ module.exports = function (app) {
             })
         });
 
-    app.route('/api/firebase/url')
-        .get(function (req, res) {
-            res.status(200).send(config.firebase.url)
-          });
-
     app.route('/api/sequence')
         .put(function (req, res) {
             matrix.launchSequence(req.body["sequence"], function (err) {
-                if (err){
+                if (err) {
                     res.sendStatus(500);
                 }
                 else

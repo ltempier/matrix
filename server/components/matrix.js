@@ -19,27 +19,21 @@ class Matrix {
 
         this.setMatrixBuffer = {};
 
-
         //this.test()
         //setInterval(this.random.bind(this), 1000)
     }
 
     test() {
-
         var n = 0;
         setInterval(() => {
             var xy = this.to2D(n);
             this.setPixel(new Pixel(xy[0], xy[1], new Color("#000000")));
             n++;
-
             if (n > this.width * this.height)
                 n = 0;
             xy = this.to2D(n);
             this.setPixel(new Pixel(xy[0], xy[1], new Color("#ff0000")));
-
-
         }, 1000)
-
     }
 
     random() {
@@ -88,21 +82,29 @@ class Matrix {
                     console.error(err);
             };
 
-        matrix = matrix.slice(0, 50);
+        if (matrix.length > 50) {
+            var matrices = [];
+            for (var i = 0; i < matrix.length; i += 50)
+                matrices.push(matrix.slice(i, i + 50))
 
-        var id = generateId(this);
-        var message = this.getMqttSetMatrixMessage(matrix);
-        message = id + this.separator + message;
-        mqtt.sendMessage('command/setMatrix', message, (err) => {
-            if (err)
-                return callback(err);
-            this.setMatrixBuffer[id] = matrix;
-            setTimeout(() => {
-                this.setMatrixBuffer[id] = null;
-            }, 10000);
-            callback()
-        });
+            async.eachSeries(matrices, (mx, cb) => {
+                this.setMatrix(mx, cb)
+            }, callback)
 
+        } else {
+            var id = generateId(this);
+            var message = this.getMqttSetMatrixMessage(matrix);
+            message = id + this.separator + message;
+            mqtt.sendMessage('command/setMatrix', message, (err) => {
+                if (err)
+                    return callback(err);
+                this.setMatrixBuffer[id] = matrix;
+                setTimeout(() => {
+                    this.setMatrixBuffer[id] = null;
+                }, 10000);
+                callback()
+            });
+        }
 
         function generateId(self) {
             var id = 0;
@@ -126,6 +128,9 @@ class Matrix {
             if (Matrix.isOdd(x))
                 y = this.height - y - 1;
         }
+
+        x = this.width - x;
+
         return [x, y]
     }
 
@@ -135,6 +140,9 @@ class Matrix {
             x = x[0]
         }
         x = parseInt(x);
+
+        x = this.width - x;
+
         y = parseInt(y);
         var n;
         if (this.orientation == "horizontal") {
