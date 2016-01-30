@@ -180,7 +180,7 @@ class Matrix {
                 dbMatrix.push(new Pixel(x, y, new Color(this.defaultColor)))
             }
         }
-        this.setMatrix(dbMatrix);
+        //this.setMatrix(dbMatrix);
         database.setMatrix(dbMatrix);
     }
 
