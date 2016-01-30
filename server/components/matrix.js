@@ -10,7 +10,7 @@ var mqtt = require('./mqtt'),
 
 class Matrix {
     constructor() {
-        this.defaultColor = "#000000";
+        this.defaultColor = "#FFFFFF";
         this.separator = ",";
         this.width = 0;
         this.height = 0;
