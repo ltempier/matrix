@@ -20,7 +20,7 @@ class Matrix {
         this.setMatrixBuffer = {};
 
 
-        // this.test()
+        //this.test()
         //setInterval(this.random.bind(this), 1000)
     }
 
