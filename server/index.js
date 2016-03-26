@@ -3,12 +3,14 @@ const path = require('path'),
     express = require('express'),
     config = require('./config'),
     session = require('express-session'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    morgan = require('morgan');
 
 var app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(morgan('combined'));
 
 app.use(session({
     name: 'session',
