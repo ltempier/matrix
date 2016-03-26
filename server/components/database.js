@@ -7,10 +7,8 @@ const config = require('./../config/index'),
 class Database {
     constructor() {
         this.ref = new Firebase(config.firebase.url);
-
         this.refSize = this.ref.child('size');
         this.refPixels = this.ref.child('pixels');
-
     }
 
     init(callback) {
@@ -27,7 +25,6 @@ class Database {
             })
         } else
             return callback();
-
     }
 
     setSize(size) {
