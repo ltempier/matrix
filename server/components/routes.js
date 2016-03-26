@@ -25,7 +25,7 @@ module.exports = function (app) {
         });
 
     app.route('/api/sequence')
-        .put(function (req, res) {
+        .post(function (req, res) {
             matrix.launchSequence(req.body["sequence"], function (err) {
                 if (err) {
                     res.sendStatus(500);
@@ -36,7 +36,7 @@ module.exports = function (app) {
         });
 
     app.route('/api/pixel')
-        .put(function (req, res) {
+        .post(function (req, res) {
             matrix.setPixel(req.body, function (err) {
                 if (err)
                     res.sendStatus(500);
@@ -46,7 +46,7 @@ module.exports = function (app) {
         });
 
     app.route('/api/matrix')
-        .put(function (req, res) {
+        .post(function (req, res) {
             matrix.setMatrix(req.body, function (err) {
                 if (err)
                     res.sendStatus(500);
