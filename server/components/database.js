@@ -11,19 +11,23 @@ class Database {
         this.refSize = this.ref.child('size');
         this.refPixels = this.ref.child('pixels');
 
-        this.tokenGenerator = new FirebaseTokenGenerator(config.firebase.secret);
     }
 
     init(callback) {
-        this.token = this.tokenGenerator.createToken({
-            uid: config.firebase.uid
-        });
-        this.ref.authWithCustomToken(this.token, function(err){
-            if(err)
-                return callback(err);
-            console.log('Firebase init');
-            callback()
-        })
+        if (config.firebase.secret) {
+            this.tokenGenerator = new FirebaseTokenGenerator(config.firebase.secret);
+            this.token = this.tokenGenerator.createToken({
+                uid: config.firebase.uid
+            });
+            this.ref.authWithCustomToken(this.token, function (err) {
+                if (err)
+                    return callback(err);
+                console.log('Firebase init');
+                callback()
+            })
+        } else
+            return callback();
+
     }
 
     setSize(size) {
