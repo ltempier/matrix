@@ -1,7 +1,6 @@
 ##Matrix Bar
 
 Matrix is a project made in collaboration with [Arnaud Delente] and [Woma] / [Ourcq Blanc] .
-
 The goal is to create a lighting bar connect with the web.
 
 ##Install
