@@ -28,13 +28,14 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(function (req, res) {
-    res.send(404);
-});
 
 require('./components').init(app, function (err) {
     if (err)
         return console.error(err);
+
+    app.use(function (req, res) {
+        res.send(404);
+    });
 
     app.listen(config.port, config.ip, function () {
         console.info('Express server listening on %d, in %s mode', config.port, config.env)
