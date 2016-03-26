@@ -54,4 +54,9 @@ module.exports = function (app) {
                     res.sendStatus(200)
             })
         });
+
+    app.route('/*')
+        .all(function (req, res) {
+            res.sendStatus(404);
+        });
 };
