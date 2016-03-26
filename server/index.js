@@ -30,6 +30,8 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use(express.static(path.join(__dirname, '..', 'client')));
+
 require('./components').init(app, function (err) {
     if (err)
         return console.error(err);

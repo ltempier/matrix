@@ -1,0 +1,19 @@
+.matrix-container {
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100vh;
+    width: 100%;
+}
+
+#matrix {
+    display: table;
+    margin: auto;
+    position: absolute;
+    bottom: 0;
+}
+
+#matrix .pixel {
+    border: solid 1px black;
+    display: table-cell;
+}

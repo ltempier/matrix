@@ -21,6 +21,7 @@ void setup() {
         client.subscribe("command/setPixel");
         client.subscribe("command/setMatrix");
         client.subscribe("command/setSize");
+        client.subscribe("command/launchSequence");
 
         client.publish("/setup","");
     }
@@ -109,7 +110,6 @@ void setSize(String &command){
 }
 
 void parseCommand(String &command, int *args){
-
     int numArgs = 0;
     int beginIdx = 0;
     int idx = command.indexOf(",");
