@@ -10,7 +10,7 @@ module.exports = {
     },
     mqtt: {
         port: 1883,
-        hostname: '195.154.118.152',
+        hostname: 'mosquitto',
         protocol: 'mqtt',
         protocolId: 'MQIsdp',
         protocolVersion: 3

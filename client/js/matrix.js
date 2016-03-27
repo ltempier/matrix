@@ -16,7 +16,7 @@ var Matrix = function () {
         "#F18D05"
     ];
     //this.url = "localhost:1989"
-    this.url = "195.154.118.152:1989"
+    //this.url = "http://195.154.118.152:1989"
 };
 
 Matrix.prototype.init = function () {
@@ -88,7 +88,7 @@ Matrix.prototype.onPixelClick = function ($el, id) {
     var color = this.colors[Math.floor(Math.random() * this.colors.length)];
     var oldColor = $el.css('background-color');
     $.ajax({
-        url: 'http://' + this.url + '/api/pixel',
+        url: this.url || '' + '/api/pixel',
         type: 'POST',
         data: {
             id: id,
