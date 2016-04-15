@@ -18,7 +18,6 @@ $ cd ~
 $ git clone https://github.com/ltempier/matrix.git
 $ git clone https://github.com/ltempier/DockerCompose.git
 $ cd DockerCompose
-$ docker-compose up mqtt
 $ docker-compose up matrix
 ```
 
