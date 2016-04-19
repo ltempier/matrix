@@ -142,7 +142,7 @@ Matrix.prototype.onPixelClick = function ($el, id, n) {
     var color = this.colors[Math.floor(Math.random() * this.colors.length)];
     var oldColor = $el.css('background-color');
     $.ajax({
-        url: this.option.url || '' + '/api/led',
+        url: (this.option.url || '') + '/api/led',
         type: 'POST',
         data: {
             n: n,
