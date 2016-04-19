@@ -1,6 +1,6 @@
 'use strict';
 
-var Matrix = function () {
+var Matrix = function (option) {
     this.id = '#matrix';
     this.container = ".matrix-container";
     this.colors = [
@@ -15,33 +15,67 @@ var Matrix = function () {
         "#F18D05",
         "#F18D05"
     ];
-    //this.url = "localhost:1989"
-    //this.url = "http://195.154.118.152:1989"
+
+    this.option = option;
+
+    window.onresize = this.resizeMatrix.bind(this);
+
+    this.createMatrix(option.width, option.height);
+    this.renderMatrix(true);
+
+    var size = this.getMatrixSize(this.matrix);
+    var self = this;
+    for (var x = 0; x < size.width; x++) {
+        for (var y = 0; y < size.height; y++) {
+            var pixelFirebase = new Firebase('https://matrixled.firebaseio.com/pixels/' + [x, y].join('-'));
+            pixelFirebase.on('value', function (snapshot) {
+                var pixel = snapshot.val();
+                self.setPixel(pixel);
+            })
+        }
+    }
 };
 
-Matrix.prototype.init = function () {
-    window.onresize = this.resizeMatrix.bind(this);
+Matrix.prototype.createMatrix = function (width, height) {
     var self = this;
-    var sizeFirebase = new Firebase('https://matrixled.firebaseio.com/size');
-    sizeFirebase.on('value', function (snapshot) {
-        var size = snapshot.val();
-        self.setSize(size.width, size.height);
-        for (var x = 0; x < size.width; x++) {
-            for (var y = 0; y < size.height; y++) {
-                var pixelFirebase = new Firebase('https://matrixled.firebaseio.com/pixels/' + [x, y].join('-'));
-                pixelFirebase.on('value', function (snapshot) {
-                    var pixel = snapshot.val();
-                    self.setPixel(pixel);
-                })
+    var matrix = [], row = [];
+    var x, y, n = 0;
+    for (y = 0; y < height; y++) {
+        matrix[y] = row = [];
+        if (y % 2)
+            for (x = width - 1; x >= 0; x--)
+                row[x] = n++
+        else
+            for (x = 0; x < width; x++)
+                row[x] = n++
+    }
+
+    matrix = rotate(matrix);
+    this.matrix = matrix;
+
+    function revert(matrix) {
+        var size = self.getMatrixSize(matrix);
+        var buffer = self.createMatrixArray(size.height, size.width), x, y;
+        for (x = 0; x < size.width; x++) {
+            for (y = 0; y < size.height; y++) {
+                buffer[x][y] = matrix[y][x]
             }
         }
-    });
-};
+        return buffer
+    }
 
-Matrix.prototype.setSize = function (width, height) {
-    this.width = width;
-    this.height = height;
-    this.createMatrix(true)
+    function rotate(matrix) {
+        var size = self.getMatrixSize(matrix);
+        var buffer = self.createMatrixArray(size.height, size.width), x, y;
+        for (y = 0; y < size.height; y++) {
+            for (x = 0; x < size.width; x++) {
+                var by = x;
+                var bx = (size.height - 1) - y;
+                buffer[by][bx] = matrix[y][x]
+            }
+        }
+        return buffer
+    }
 };
 
 Matrix.prototype.setPixel = function (pixel) {
@@ -51,27 +85,47 @@ Matrix.prototype.setPixel = function (pixel) {
     $(this.id + ' #' + pixel.x + '-' + pixel.y).css('background-color', 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
 };
 
-Matrix.prototype.setMatrix = function (pixels) {
-    pixels.forEach(this.setPixel)
+Matrix.prototype.getMatrixSize = function (matrix) {
+    var height = matrix.length || 0, width = 0;
+    if (height)
+        width = matrix[0].length || 0;
+    return {
+        width: width,
+        height: height
+    }
 };
 
-Matrix.prototype.createMatrix = function (clear) {
+Matrix.prototype.createMatrixArray = function (width, height) {
+    var matrix = [], row = [];
+    for (var x = 0; x < width; x++)
+        row.push(null);
+    for (var y = 0; y < height; y++)
+        matrix.push(row.slice())
+    return matrix
+};
+
+Matrix.prototype.renderMatrix = function (clear) {
     if (clear == true)
         $(this.id).empty();
 
-
-    for (var y = 0; y < this.height; y++) {
+    var size = this.getMatrixSize(this.matrix);
+    for (var y = 0; y < size.height; y++) {
         var $row = $('<div></div>');
         $row.addClass('row');
         $row.attr('id', "row-" + y);
-        for (var x = 0; x < this.width; x++) {
-            var $pixel = $('<div></di>');
-            $pixel.addClass('pixel');
-            $pixel.attr('id', [(this.width - 1) - x, y].join("-"));
-            $pixel.height(0);
-            $pixel.width(0);
-            $pixel.hide();
-            $row.append($pixel);
+
+        var row = this.matrix[y];
+        for (var x = 0; x < row.length; x++) {
+            var n = row[x];
+
+            var $cell = $('<div></di>');
+            $cell.addClass('cell pixel');
+            $cell.attr('id', [x, y].join("-"));
+            $cell.attr('n', n);
+            //$cell.text(n);
+            $cell.hide();
+
+            $row.append($cell);
         }
         $(this.id).append($row);
     }
@@ -80,18 +134,18 @@ Matrix.prototype.createMatrix = function (clear) {
 
     var self = this;
     $(this.container + ' .pixel').on('click', function () {
-        self.onPixelClick($(this), $(this).attr('id'))
+        self.onPixelClick($(this), $(this).attr('id'), $(this).attr('n'))
     });
 };
 
-Matrix.prototype.onPixelClick = function ($el, id) {
+Matrix.prototype.onPixelClick = function ($el, id, n) {
     var color = this.colors[Math.floor(Math.random() * this.colors.length)];
     var oldColor = $el.css('background-color');
     $.ajax({
-        url: this.url || '' + '/api/pixel',
+        url: this.option.url || '' + '/api/led',
         type: 'POST',
         data: {
-            id: id,
+            n: n,
             color: color
         },
         error: function () {
@@ -102,11 +156,21 @@ Matrix.prototype.onPixelClick = function ($el, id) {
 };
 
 Matrix.prototype.resizeMatrix = function () {
-    var pixelWidth = $(this.container).width() / this.width;
-    var pixelHeight = $(this.container).height() / this.height;
+    var size = this.getMatrixSize(this.matrix);
+    var pixelWidth = $(this.container).width() / size.width;
+    var pixelHeight = $(this.container).height() / size.height;
     $('#matrix .pixel').each(function () {
         $(this).width(pixelWidth);
         $(this).height(pixelHeight);
         $(this).show();
     });
 };
+
+
+$(document).ready(function () {
+    new Matrix({
+        width: 27,
+        height: 12,
+        url: "http://195.154.118.152:1989"
+    });
+});

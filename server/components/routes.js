@@ -45,6 +45,16 @@ module.exports = function (app) {
             })
         });
 
+    app.route('/api/led')
+        .post(function (req, res) {
+            matrix.setLed(req.body, function (err, message) {
+                if (err)
+                    res.sendStatus(500);
+                else
+                    res.status(200).send(message)
+            })
+        });
+
     app.route('/api/matrix')
         .post(function (req, res) {
             matrix.setMatrix(req.body, function (err) {

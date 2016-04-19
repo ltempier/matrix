@@ -66,6 +66,23 @@ class Matrix {
         mqtt.sendMessage('command/setPixel', message, callback)
     }
 
+    setLed(pixel, callback) {
+        if (!callback || typeof callback !== 'function')
+            callback = function (err) {
+                if (err)
+                    console.error(err);
+            };
+        var color = new Color(pixel.color);
+        const message = this.getMqttSetLedMessage(pixel.n, color);
+        mqtt.sendMessage('command/setPixel', message, function (err) {
+            if (err)
+                callback(err);
+            else
+                callback(null, message)
+        })
+    }
+
+
     launchSequence(message, callback) {
         if (!callback || typeof callback !== 'function')
             callback = function (err) {
@@ -159,6 +176,10 @@ class Matrix {
                 n += y;
         }
         return n
+    }
+
+    getMqttSetLedMessage(n, color) {
+        return [n].concat(color.toArray()).join(this.separator);
     }
 
     getMqttSetPixelMessage(x, y, color) {
