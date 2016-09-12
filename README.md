@@ -9,7 +9,7 @@ edit server/config
 
 ```bash
 $ npm install -g nodemon
-$ npm run postinstall && npm start
+$ npm start
 ```
 
 with docker-compose:
